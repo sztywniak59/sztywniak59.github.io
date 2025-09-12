@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Interaktywna Strona z JS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #1e3c72);
+            background-size: 400% 400%;
+            animation: gradientAnim 10s ease infinite;
+            color: white;
+            text-align: center;
+        }
+
+        @keyframes gradientAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #00c6ff;
+            background-image: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        #output {
+            margin-top: 40px;
+            font-size: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        #output.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎉 Witaj na interaktywnej stronie!</h1>
+    <button onclick="uruchomDialogi()">Kliknij tutaj</button>
+    <div id="output"></div>
+
+    <script>
+        function uruchomDialogi() {
+            alert("Cześć! Miło Cię widzieć 👋");
+
+            const kontynuuj = confirm("Czy chcesz podać swoje imię?");
+            const output = document.getElementById("output");
+
+            if (kontynuuj) {
+                const imie = prompt("Jak masz na imię?");
+                if (imie && imie.trim() !== "") {
+                    output.innerText = `Witaj, ${imie.trim()}! 🌟`;
+                } else {
+                    output.innerText = "Nie podałeś imienia 😢";
+                }
+            } else {
+                output.innerText = "Może następnym razem 😎";
+            }
+
+            output.classList.add("show");
+        }
+    </script>
+
+</body>
+</html>
