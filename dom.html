@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM – Slider i Lightbox</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* ===== SLIDER ===== */
+        .slider {
+            width: 400px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .slider img {
+            width: 100%;
+            display: none;
+            cursor: pointer;
+        }
+
+        .slider img.active {
+            display: block;
+        }
+
+        .slider button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .prev { left: 0; }
+        .next { right: 0; }
+
+        /* ===== LIGHTBOX ===== */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            box-shadow: 0 0 20px #000;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>DOM – Slider i Lightbox</h1>
+
+<div class="slider">
+    <button class="prev">◀</button>
+
+    <img src="https://picsum.photos/id/1015/400/250" class="active" alt="zdjęcie 1">
+    <img src="https://picsum.photos/id/1025/400/250" alt="zdjęcie 2">
+    <img src="https://picsum.photos/id/1035/400/250" alt="zdjęcie 3">
+
+    <button class="next">▶</button>
+</div>
+
+<div class="info">
+    <button id="changeText">Zmień tekst (DOM)</button>
+    <p id="text">To jest przykładowy tekst.</p>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+    <img src="" alt="duże zdjęcie">
+</div>
+
+<script>
+    /* ===== DOM + ZDARZENIA ===== */
+
+    const images = document.querySelectorAll('.slider img');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('img');
+
+    let current = 0;
+
+    function showImage(index) {
+        images.forEach(img => img.classList.remove('active'));
+        images[index].classList.add('active');
+    }
+
+    prevBtn.addEventListener('click', () => {
+        current = (current - 1 + images.length) % images.length;
+        showImage(current);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        current = (current + 1) % images.length;
+        showImage(current);
+    });
+
+    /* ===== LIGHTBOX ===== */
+    images.forEach(img => {
+        img.addEventListener('click', () => {
+            lightbox.style.display = 'flex';
+            lightboxImg.src = img.src;
+        });
+    });
+
+    lightbox.addEventListener('click', () => {
+        lightbox.style.display = 'none';
+    });
+
+    /* ===== MANIPULACJA DOM ===== */
+    document.getElementById('changeText').addEventListener('click', () => {
+        document.getElementById('text').textContent =
+            'Tekst został zmieniony przez JavaScript!';
+    });
+</script>
+
+</body>
+</html>
