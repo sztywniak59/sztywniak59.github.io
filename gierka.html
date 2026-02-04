@@ -36,9 +36,13 @@ let bird = {
 };
 
 let pipes = [];
+let coins = [];
+let powerups = [];
 let frame = 0;
 let score = 0;
 let gameOver = false;
+let pipeSpeed = 2;
+let slowTimer = 0;
 
 function jump() {
   bird.velocity = bird.lift;
@@ -58,14 +62,42 @@ function addPipe() {
     bottom: top + gap,
     passed: false
   });
+
+  // coin
+  if (Math.random() < 0.6) {
+    coins.push({
+      x: canvas.width + 15,
+      y: top + gap / 2,
+      r: 6
+    });
+  }
+
+  // powerup
+  if (Math.random() < 0.2) {
+    powerups.push({
+      x: canvas.width + 15,
+      y: Math.random() * 300 + 80,
+      r: 8
+    });
+  }
 }
 
 function reset() {
   bird.y = 150;
   bird.velocity = 0;
   pipes = [];
+  coins = [];
+  powerups = [];
   score = 0;
+  pipeSpeed = 2;
+  slowTimer = 0;
   gameOver = false;
+}
+
+function collide(a, b) {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.sqrt(dx*dx + dy*dy) < a.r + b.r;
 }
 
 function update() {
@@ -77,8 +109,11 @@ function update() {
 
   if (frame % 90 === 0) addPipe();
 
+  if (slowTimer > 0) slowTimer--;
+  pipeSpeed = slowTimer > 0 ? 1 : 2;
+
   pipes.forEach(pipe => {
-    pipe.x -= 2;
+    pipe.x -= pipeSpeed;
 
     if (!pipe.passed && pipe.x + 30 < bird.x) {
       score++;
@@ -95,13 +130,31 @@ function update() {
     }
   });
 
-  if (bird.y > canvas.height || bird.y < 0) {
-    gameOver = true;
-  }
+  coins = coins.filter(c => {
+    c.x -= pipeSpeed;
+    if (collide({x: bird.x, y: bird.y, r: bird.radius}, c)) {
+      score += 5;
+      return false;
+    }
+    return c.x > 0;
+  });
+
+  powerups = powerups.filter(p => {
+    p.x -= pipeSpeed;
+    if (collide({x: bird.x, y: bird.y, r: bird.radius}, p)) {
+      slowTimer = 300; // ~5s
+      return false;
+    }
+    return p.x > 0;
+  });
+
+  if (bird.y > canvas.height || bird.y < 0) gameOver = true;
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // day / night
+  ctx.fillStyle = score >= 10 ? "#1a1a2e" : "#70c5ce";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // bird
   ctx.beginPath();
@@ -111,22 +164,38 @@ function draw() {
 
   // pipes
   ctx.fillStyle = "green";
-  pipes.forEach(pipe => {
-    ctx.fillRect(pipe.x, 0, 30, pipe.top);
-    ctx.fillRect(pipe.x, pipe.bottom, 30, canvas.height);
+  pipes.forEach(p => {
+    ctx.fillRect(p.x, 0, 30, p.top);
+    ctx.fillRect(p.x, p.bottom, 30, canvas.height);
   });
 
-  // score
-  ctx.fillStyle = "#000";
-  ctx.font = "24px Arial";
+  // coins
+  ctx.fillStyle = "gold";
+  coins.forEach(c => {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // powerups
+  ctx.fillStyle = "cyan";
+  powerups.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // HUD
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px Arial";
   ctx.fillText("Score: " + score, 10, 30);
 
   if (gameOver) {
     ctx.fillStyle = "red";
-    ctx.font = "30px Arial";
+    ctx.font = "28px Arial";
     ctx.fillText("GAME OVER", 60, 240);
-    ctx.font = "16px Arial";
-    ctx.fillText("Kliknij aby zagrać jeszcze raz", 40, 270);
+    ctx.font = "14px Arial";
+    ctx.fillText("Kliknij aby zagrać ponownie", 55, 270);
   }
 }
 
@@ -139,9 +208,10 @@ function loop() {
   draw();
   requestAnimationFrame(loop);
 }
-
 loop();
 </script>
 
+
 </body>
 </html>
+
