@@ -89,7 +89,7 @@ function reset() {
   coins = [];
   powerups = [];
   score = 0;
-  pipeSpeed = 2;
+  pipeSpeed = 80;
   slowTimer = 0;
   gameOver = false;
 }
@@ -133,7 +133,7 @@ function update() {
   coins = coins.filter(c => {
     c.x -= pipeSpeed;
     if (collide({x: bird.x, y: bird.y, r: bird.radius}, c)) {
-      score += 5;
+      score += 500;
       return false;
     }
     return c.x > 0;
@@ -214,4 +214,5 @@ loop();
 
 </body>
 </html>
+
 
