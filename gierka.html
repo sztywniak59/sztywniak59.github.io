@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Flappy Bird</title>
+<style>
+  body {
+    margin: 0;
+    background: #70c5ce;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  canvas {
+    background: #70c5ce;
+    border: 2px solid #000;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="game" width="320" height="480"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let bird = {
+  x: 50,
+  y: 150,
+  radius: 12,
+  velocity: 0,
+  gravity: 0.5,
+  lift: -8
+};
+
+let pipes = [];
+let frame = 0;
+let score = 0;
+let gameOver = false;
+
+function jump() {
+  bird.velocity = bird.lift;
+}
+
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") jump();
+});
+canvas.addEventListener("click", jump);
+
+function addPipe() {
+  const gap = 120;
+  const top = Math.random() * (canvas.height - gap - 80) + 40;
+  pipes.push({
+    x: canvas.width,
+    top,
+    bottom: top + gap,
+    passed: false
+  });
+}
+
+function reset() {
+  bird.y = 150;
+  bird.velocity = 0;
+  pipes = [];
+  score = 0;
+  gameOver = false;
+}
+
+function update() {
+  if (gameOver) return;
+
+  frame++;
+  bird.velocity += bird.gravity;
+  bird.y += bird.velocity;
+
+  if (frame % 90 === 0) addPipe();
+
+  pipes.forEach(pipe => {
+    pipe.x -= 2;
+
+    if (!pipe.passed && pipe.x + 30 < bird.x) {
+      score++;
+      pipe.passed = true;
+    }
+
+    if (
+      bird.x + bird.radius > pipe.x &&
+      bird.x - bird.radius < pipe.x + 30 &&
+      (bird.y - bird.radius < pipe.top ||
+       bird.y + bird.radius > pipe.bottom)
+    ) {
+      gameOver = true;
+    }
+  });
+
+  if (bird.y > canvas.height || bird.y < 0) {
+    gameOver = true;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // bird
+  ctx.beginPath();
+  ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+  ctx.fillStyle = "yellow";
+  ctx.fill();
+
+  // pipes
+  ctx.fillStyle = "green";
+  pipes.forEach(pipe => {
+    ctx.fillRect(pipe.x, 0, 30, pipe.top);
+    ctx.fillRect(pipe.x, pipe.bottom, 30, canvas.height);
+  });
+
+  // score
+  ctx.fillStyle = "#000";
+  ctx.font = "24px Arial";
+  ctx.fillText("Score: " + score, 10, 30);
+
+  if (gameOver) {
+    ctx.fillStyle = "red";
+    ctx.font = "30px Arial";
+    ctx.fillText("GAME OVER", 60, 240);
+    ctx.font = "16px Arial";
+    ctx.fillText("Kliknij aby zagrać jeszcze raz", 40, 270);
+  }
+}
+
+canvas.addEventListener("click", () => {
+  if (gameOver) reset();
+});
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+
+</body>
+</html>
