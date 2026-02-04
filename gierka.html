@@ -133,7 +133,7 @@ function update() {
   coins = coins.filter(c => {
     c.x -= pipeSpeed;
     if (collide({x: bird.x, y: bird.y, r: bird.radius}, c)) {
-      score += 500;
+      score += 5000;
       return false;
     }
     return c.x > 0;
@@ -165,7 +165,7 @@ function draw() {
   // pipes
   ctx.fillStyle = "green";
   pipes.forEach(p => {
-    ctx.fillRect(p.x, 0, 30, p.top);
+    ctx.fillRect(p.x, 0, 20, p.top);
     ctx.fillRect(p.x, p.bottom, 30, canvas.height);
   });
 
@@ -200,7 +200,7 @@ function draw() {
 }
 
 canvas.addEventListener("click", () => {
-  if (gameOver) reset();
+  if (gameOver) r();
 });
 
 function loop() {
@@ -214,5 +214,6 @@ loop();
 
 </body>
 </html>
+
 
 
