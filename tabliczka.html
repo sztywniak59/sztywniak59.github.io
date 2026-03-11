@@ -2,22 +2,19 @@
 <html>
 <head>
 <style>
-  table {
-    border-collapse: collapse;
-    font-family: Arial;
-  }
-  td {
-    border: 1px solid black;
-    width: 40px;
-    height: 40px;
-    text-align: center;
-  }
-  .even {
-    background-color: lightblue;
-  }
-  .odd {
-    background-color: lightyellow;
-  }
+table {
+  border-collapse: collapse;
+  font-family: Arial;
+}
+td {
+  border: 1px solid black;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+}
+td:hover {
+  background-color: lightgreen;
+}
 </style>
 </head>
 <body>
@@ -25,31 +22,34 @@
 <table id="tab"></table>
 
 <script>
-const table = document.getElementById("tab");
+const tabela = document.getElementById("tab");
 
-const tabliczka = Array(10).fill(0).map((_, i) =>
-  Array(10).fill(0).map((_, j) => (i + 1) * (j + 1))
-);
+// tworzymy tablicę 10x10 używając new Array
+const tabliczka = new Array(10);
 
-tabliczka.forEach(row => {
+for (let i = 0; i < 10; i++) {
+  tabliczka[i] = new Array(10);
+
+  for (let j = 0; j < 10; j++) {
+    tabliczka[i][j] = (i + 1) * (j + 1);
+  }
+}
+
+// tworzenie tabeli HTML
+for (let i = 0; i < 10; i++) {
   const tr = document.createElement("tr");
 
-  row.forEach(num => {
+  for (let j = 0; j < 10; j++) {
     const td = document.createElement("td");
-    td.textContent = num;
-
-    if (num % 2 === 0) {
-      td.className = "even";
-    } else {
-      td.className = "odd";
-    }
-
+    td.textContent = tabliczka[i][j];
     tr.appendChild(td);
-  });
+  }
 
-  table.appendChild(tr);
-});
+  tabela.appendChild(tr);
+}
 </script>
 
 </body>
 </html>
+
+
